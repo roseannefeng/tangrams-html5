@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+	#canvas {
+	  text-align: center;
+	  padding-top: 10px;
+	  padding-left: 10px;
+	  padding-right: 10px;
+	  padding-bottom: 10px;
+	  position: fixed;
+	  display: inline-block;
+	  border-style: solid;
+	  border-width: 1px;
+	}
+	</style>
+
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/ocanvas/2.7.3/ocanvas.min.js"></script>
+	<script>
+	function initTangrams() {
+		var canvas = document.getElementById("canvas");
+//		canvas.addEventListener("mousedown", mouseDown, false);
+		// maybe this should be added for the polygons?
+		// but then it might not register movement on the blank canvas
+
+		var canvasObj = oCanvas.create({
+			canvas: "#canvas"});
+			
+		var triangle = addShape(canvasObj, "triangle", [10, 50, 40, 60, 50, 20]);
+		var parallelogram = addShape(canvasObj, "parallelogram", [100, 30, 200, 30, 220, 70, 120, 70]);
+	
+	}
+
+	// helper function: given set of coords (6 or 8 element array), find average, i.e. center
+	function shapeCenter(coordArray) {
+		var x = 0, y = 0, n = coordArray.length / 2;
+		for (var i = 0; i < 2*n; i++) {
+			if (i % 2 == 0) {
+				x += coordArray[i];
+			}
+			else {
+				y += coordArray[i];
+			}
+		}
+		return [x/n, y/n];
+	}
+	
+	// creates triangles, rectangle, and parallelograms - split init function?
+	// use register's draw function - probably not going to help w/ regular polygons substantially, consistency
+	// could probably give initShape a 6 or 8 element array w/ pixel coords for points
+	function addShape(canvas, name, coordArray) {
+		canvas.display.register(name, {
+			shapeType: "rectangular"
+			}, function (canvas) {
+			    var origin = this.getOrigin(),
+				x = this.abs_x - origin.x,
+				y = this.abs_y - origin.y,
+				width = this.width,
+				height = this.height;
+
+		canvas.beginPath();
+		canvas.moveTo(coordArray[0], coordArray[1]);
+		for (var i = 2; i < coordArray.length; i += 2){
+		    canvas.lineTo(coordArray[i], coordArray[i+1]);
+		}
+		canvas.closePath();
+		canvas.fillStyle = this.fill;
+		canvas.fill();
+
+
+		canvas.beginPath();
+		canvas.moveTo(coordArray[0], coordArray[1]);
+		for (var i = 2; i < coordArray.length; i += 2){
+		    canvas.lineTo(coordArray[i], coordArray[i+1]);
+		}
+		canvas.closePath();
+		canvas.strokeStyle = this.strokeColor;
+		canvas.lineWidth = this.strokeWidth;
+		canvas.stroke();
+
+		})
+		
+		var obj = canvas.display[name]({
+			x: coordArray[0],
+			y: coordArray[1],
+			fill: "#f00",
+			stroke: "1px #000"
+		});
+		
+		obj.bind("dblclick", function() {
+			alert("hi!!");
+		});
+		
+		canvas.addChild(obj);		
+		return obj;
+	}
+	
+	// draw a halo around active tangram (object)
+	
+	// select active tan (double click? global active?)
+
+	// rotate active tan
+	
+	// drag active tan
+	
+	// change color of active tan
+	// note: can use sprite to display the colors maybe? or just dynamically draw the colors near the canvas
+	
+	function mouseDown(event) {
+		canvas_x = event.pageX;	
+		canvas_y = event.pageY;
+		console.log([canvas_x, canvas_y]);
+		return [canvas_x, canvas_y];
+	}
+		
+	</script>
+</head>
+
+<body onload="initTangrams();">
+	<div id = "board">
+		<canvas id="canvas" height="600px" width="600px"></canvas>
+	</div>
+</body>
+</html>
