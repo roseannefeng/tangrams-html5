@@ -26,9 +26,23 @@
 		var canvasObj = oCanvas.create({
 			canvas: "#canvas"});
 			
-		var triangle = addShape(canvasObj, "triangle", [10, 50, 40, 60, 50, 20]);
-		var parallelogram = addShape(canvasObj, "parallelogram", [100, 30, 200, 30, 220, 70, 120, 70]);
-	
+		var triangle = makeShape(canvasObj, "triangle", [10, 50, 40, 60, 50, 20]);
+//		var parallelogram = makeShape(canvasObj, "parallelogram", [100, 30, 200, 30, 220, 70, 120, 70]);
+		
+/*		var triangle = canvasObj.display.polygon({
+			x: 177,
+			y: 145,
+			sides: 3,
+			radius: 80,
+			rotation: 270,
+			fill: "#0aa"
+		});*/
+		console.log(triangle);
+		canvasObj.addChild(triangle);
+		triangle.bind("dblclick", function () {
+			alert("hi!!");
+		});
+		
 	}
 
 	// helper function: given set of coords (6 or 8 element array), find average, i.e. center
@@ -48,10 +62,8 @@
 	// creates triangles, rectangle, and parallelograms - split init function?
 	// use register's draw function - probably not going to help w/ regular polygons substantially, consistency
 	// could probably give initShape a 6 or 8 element array w/ pixel coords for points
-	function addShape(canvas, name, coordArray) {
-		canvas.display.register(name, {
-			shapeType: "rectangular"
-			}, function (canvas) {
+	function makeShape(canvas, name, coordArray) {
+		canvas.display.register(name, {}, function (canvas) {
 			    var origin = this.getOrigin(),
 				x = this.abs_x - origin.x,
 				y = this.abs_y - origin.y,
@@ -80,18 +92,29 @@
 
 		})
 		
+		objXs = [], objYs = [];
+		for (var i = 0; i < coordArray.length; i+= 2){
+			objXs.push(coordArray[i]);
+			objYs.push(coordArray[i+1]);
+		};
+		objW = Math.max.apply(Math, objXs) - Math.min.apply(Math, objXs);
+		objH = Math.max.apply(Math, objYs) - Math.min.apply(Math, objYs);
+		
 		var obj = canvas.display[name]({
 			x: coordArray[0],
 			y: coordArray[1],
+			width: objW,
+			height: objH,
 			fill: "#f00",
 			stroke: "1px #000"
-		});
+		});	
+
+//		canvas.addChild(obj);		
+
+//		obj.bind("click tap", function() {
+//			alert("hi!!");
+//		});	
 		
-		obj.bind("dblclick", function() {
-			alert("hi!!");
-		});
-		
-		canvas.addChild(obj);		
 		return obj;
 	}
 	
